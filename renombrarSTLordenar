@@ -1,0 +1,67 @@
+#!/bin/bash
+
+# email:barajasg@unican.es
+
+carpeta='/media/gabi/Almacen2/PROYECTOS/2016-Jacket/03-Ejecuciones-V1612+/04-plataforma1-olas-corriente_v1612+/postProcessing/elevation/'
+
+echo $carpeta
+cd $carpeta;
+
+es_numero='^[0-9]+$'
+for i in $( ls ); do
+	echo item: $i
+	if [[ $i =~ ^-?[0-9]+$ ]]; then	
+		echo "moviendo " $i "al nuevo formato" "$i.0"
+		mv $i "$i.0"
+	fi
+done
+
+
+CONTADOR=0
+for i in $( ls ); do
+	echo item: $i
+	cd $i;
+
+        let CONTADOR=CONTADOR+1
+	echo      CONTADOR: $CONTADOR
+
+	for filename in *.stl; do
+
+		echo $filename
+		filename2=${filename%.*}
+		NAME1=${i%.*}
+		NAME2=${i##*.}
+
+		if [ "${#NAME1}" -eq 1 ]; then
+    			if [ "${#NAME2}" -eq 1 ];then
+				gb="000$NAME1$NAME2"
+				gb="$gb"0
+			elif [  "${#NAME2}" -eq 2 ]; then
+				gb="000$NAME1$NAME2"
+			fi 
+
+		elif [  "${#NAME1}" = 2 ]; then
+    			if [ "${#NAME2}" -eq 1 ]; then
+				gb="00$NAME1$NAME2"
+				gb="$gb"0
+			elif [  "${#NAME2}" -eq 2 ]; then
+				gb="00$NAME1$NAME2"
+			fi
+		elif [  "${#NAME1}" = 3 ]; then
+    			if [ "${#NAME2}" -eq 1 ]; then
+				gb="0$NAME1$NAME2"
+				gb="$gb"0
+			elif [  "${#NAME2}" -eq 2 ]; then
+				gb="0$NAME1$NAME2"
+			fi
+		fi 
+		
+		echo renombrando en: $(pwd) el fichero "$filename" a "$filename2.$gb.stl"
+		mv "$filename" "$filename2.$gb.stl";  
+		mv "$filename2.$gb.stl" ./../.
+		echo "$filename2.$gb.stl"
+
+	done;
+	cd ..;
+done 
+
